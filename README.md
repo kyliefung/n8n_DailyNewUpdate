@@ -23,6 +23,7 @@ RSS → Filter → Normalize → Merge → AI Summarize → Validate → HTML Re
 - **Automated Delivery**: Sends scheduled daily updates via Gmail
 
 ---
+![Uploading image.png…]()
 
 ## 🧠 AI Output Schema
 
