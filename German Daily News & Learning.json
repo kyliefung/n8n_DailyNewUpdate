@@ -1,0 +1,529 @@
+{
+  "name": "German Daily News & Learning",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8340d734-676e-4e84-b65a-11993d027615",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fb1aa4ac-f7c0-4b14-9a41-987ad3415f4a",
+              "leftValue": "={{ $json.content }}",
+              "rightValue": "Nürnberg",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "9a308bb4-effb-4eff-bb13-7cdb43ea4642",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        528,
+        176
+      ],
+      "id": "ed3e66c2-3cb7-44a7-8b47-cb673cfeb9f6",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "url": "https://nachrichtenfeeds.br.de/rdf/boards/UZlNk5T",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        -192
+      ],
+      "id": "3c1f3a24-31e1-4ade-aea5-0509ccc1dfd1",
+      "name": "RSS Read(Kultur)"
+    },
+    {
+      "parameters": {
+        "url": "https://nachrichtenfeeds.br.de/rss/nachrichten/seiten/QXAPqxI",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        176
+      ],
+      "id": "20e4d790-7981-4b27-9fee-0d5f10f0ffe4",
+      "name": "RSS Read(Franken)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "02d4314b-a521-4030-9dd7-2c57437237f0",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "cde9377f-c3e5-49c3-af5a-f603579274e3",
+              "name": "date",
+              "value": "={{ $json.pubDate }}",
+              "type": "string"
+            },
+            {
+              "id": "e7db5604-a9c1-4749-9af8-5a4a6f955256",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "8b081226-0b3f-4d5e-8157-fe1ba892c01b",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "2b845d5d-fc0b-4ece-b674-b05b6f38504b",
+              "name": "source",
+              "value": "source = \"Franken\"",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        176
+      ],
+      "id": "50271376-b992-4823-aa84-b72c2741fe80",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        736,
+        176
+      ],
+      "id": "a1840378-6887-4a56-87c1-c9e7d90f229b",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        528,
+        -192
+      ],
+      "id": "f5fdf3f8-4c81-4684-ae8b-3615758ab13a",
+      "name": "Limit1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "78fe0c92-ede7-49dc-b509-059dd150fff2",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "499ff3fd-0937-41e1-916c-611a9a29c1e5",
+              "name": "date",
+              "value": "={{ $json.date }}",
+              "type": "string"
+            },
+            {
+              "id": "bb418cf8-9d62-480d-86f0-a26dc464f7ff",
+              "name": "content",
+              "value": "={{ $json[\"content:encodedSnippet\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "428cdfb6-665b-4f36-b868-91050bc2ccae",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "86df9081-988d-4178-b007-843f84d988f7",
+              "name": "source",
+              "value": "source = \"Kultur\"",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        976,
+        -192
+      ],
+      "id": "c1aba13d-24b5-4537-892a-50f0d65ac02c",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1200,
+        -32
+      ],
+      "id": "ac9e3a08-6e8f-47bc-a5f9-38509dd417e2",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Code node (after Merge)\n// Goal:\n// - Prefer Franken first, then Kultur\n// - De-dup by link\n// - Max 10 articles total\n// - Return ONE item: { articles: [...], count: n }\n\nfunction pick(obj, keys, fallback = \"\") {\n  for (const k of keys) {\n    const v = obj?.[k];\n    if (v !== undefined && v !== null && String(v).trim() !== \"\") return v;\n  }\n  return fallback;\n}\n\nfunction normalizeArticle(item) {\n  const j = item?.json ?? {};\n\n  const title = pick(j, [\"title\", \"Title\"], \"\");\n  const link = pick(j, [\"link\", \"Link\", \"guid\"], \"\");\n  // 你BR/BR24可能係 content:encodedSnippet / contentSnippet / content\n  const snippet = pick(j, [\"snippet\", \"Snippet\", \"contentSnippet\", \"content:encodedSnippet\", \"content\"], \"\");\n  const source = pick(j, [\"source\"], \"\"); // 你已經喺 Edit Fields 設好 \"Franken\"/\"Kultur\"\n\n  if (!title || !link) return null;\n\n  return { title, link, snippet, source };\n}\n\n// 1) Normalize\nconst normalized = items\n  .map(normalizeArticle)\n  .filter(Boolean);\n\n// 2) Sort: Franken first (optional but matches your requirement)\nnormalized.sort((a, b) => {\n  const pa = a.source === \"Franken\" ? 0 : 1;\n  const pb = b.source === \"Franken\" ? 0 : 1;\n  return pa - pb;\n});\n\n// 3) De-dup by link + take max 10\nconst seen = new Set();\nconst articles = [];\n\nfor (const a of normalized) {\n  if (seen.has(a.link)) continue;\n  seen.add(a.link);\n  articles.push(a);\n  if (articles.length >= 10) break;\n}\n\nreturn [\n  {\n    json: {\n      articles,\n      count: articles.length,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1408,
+        -32
+      ],
+      "id": "2d22f162-1815-4b6f-a25f-c6705b684a6d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a structured news digest generator and German learning assistant.\n\nReturn ONLY valid JSON.\nNo markdown.\nNo code block.\nNo commentary.\nNo explanations.\n\nFollow the schema EXACTLY.\nDo not add extra keys.\nDo not rename keys.\n\nRequirements:\n\nGENERAL\n- Output must be valid JSON.\n- All arrays must exist (even if empty).\n- No trailing commas.\n- No additional text outside JSON.\n\nSUMMARY RULES\n- summary_de must be written in clear B1 German.\n- Use short sentences.\n- 3–5 bullet points per article.\n- Neutral, factual tone.\n- No speculation beyond the provided snippet.\n\n- summary_en must be a faithful English translation of summary_de.\n- summary_zh must be a faithful Traditional Chinese translation of summary_en.\n- summary_en and summary_zh must have EXACTLY the same number of bullets as summary_de.\n\nVOCABULARY RULES (PER ARTICLE)\n- Each article must contain EXACTLY 2 vocabulary items.\n- Vocabulary must be B1 level.\n- Vocabulary must be relevant to the article context.\n- Avoid overly abstract academic terms.\n- Prefer useful news-reading words (e.g., Ausstellung, Entscheidung, entwickeln, öffentlich, gemeinsam).\n\nFor each vocabulary item:\n- word: base form (e.g., entscheiden, die Ausstellung)\n- pos: Nomen / Verb / Adjektiv / Redewendung\n- definition_de: short, simple German definition (B1 level)\n- example_de: one sentence related to the article topic (B1 level)\n- translation_en: natural English translation\n- translation_zh: Traditional Chinese translation\n\nSCHEMA:\n\n{\n  \"title\": string,\n  \"date\": string,\n  \"items\": [\n    {\n      \"title\": string,\n      \"date\": string,\n      \"link\": string,\n      \"summary_de\": string[],\n      \"summary_en\": string[],\n      \"summary_zh\": string[],\n      \"vocab_de_b1\": [\n        {\n          \"word\": string,\n          \"pos\": string,\n          \"definition_de\": string,\n          \"example_de\": string,\n          \"translation_en\": string,\n          \"translation_zh\": string\n        }\n      ]\n    }\n  ]\n}"
+            },
+            {
+              "content": "=Create a German News Learning Digest.\n\nMeta:\n- title: \"German News Update + Learning\"\n- date: {{ $now.toFormat(\"yyyy-LL-dd\") }}\n\nArticles (JSON array):\n{{ JSON.stringify($json.articles) }}\n\nTasks:\n\n1) For each article:\n- Use article.title as title.\n- Use article.link as link.\n- If no date is provided, use the Meta date.\n- Write 3–5 B1-level German bullet points in summary_de.\n- Translate summary_de into English (summary_en).\n- Translate summary_en into Traditional Chinese (summary_zh).\n- All three arrays must have the SAME number of bullets.\n\n2) For each article:\n- Extract EXACTLY 2 B1 vocabulary words from the article context.\n- Vocabulary must appear naturally in summary_de OR be clearly relevant to the article topic.\n- Provide definition_de, example_de (related to the article topic), translation_en, translation_zh.\n- Example sentence must be realistic and related to the news topic.\n\nConstraints:\n- Do NOT invent facts beyond the given snippet.\n- Keep sentences short and clear (B1).\n- No extra commentary.\n- Output ONLY JSON with the exact schema from the System message."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1616,
+        -32
+      ],
+      "id": "e92f7c50-987b-42cb-96b5-eba3c477014b",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "xxxxxxxxxxxxxxxxxxxxx",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function esc(s = \"\") {\n  return String(s)\n    .replace(/&/g, \"&amp;\")\n    .replace(/</g, \"&lt;\")\n    .replace(/>/g, \"&gt;\")\n    .replace(/\"/g, \"&quot;\")\n    .replace(/'/g, \"&#039;\");\n}\n\nfunction safeJsonParse(raw = \"\") {\n  try {\n    return JSON.parse(raw);\n  } catch (e) {\n    // Try to extract JSON object from extra text (defensive)\n    const m = String(raw).match(/\\{[\\s\\S]*\\}/);\n    if (m) {\n      try { return JSON.parse(m[0]); } catch (_) {}\n    }\n    return null;\n  }\n}\n\nfunction normalizeBullets(arr, max = 5) {\n  if (!Array.isArray(arr)) return [];\n  return arr\n    .map(x => String(x ?? \"\").trim())\n    .filter(Boolean)\n    .slice(0, max);\n}\n\nfunction looksSame(a, b) {\n  if (!a?.length || !b?.length) return false;\n  if (a.length !== b.length) return false;\n  return a.every((v, i) => String(v).trim() === String(b[i]).trim());\n}\n\nfunction badge(text, bg, color) {\n  return `\n    <span style=\"\n      display:inline-block;\n      padding:2px 8px;\n      border-radius:999px;\n      font-size:12px;\n      font-weight:800;\n      background:${bg};\n      color:${color};\n      margin-right:6px;\n      vertical-align:middle;\n    \">${esc(text)}</span>\n  `;\n}\n\nfunction sectionTitle(text) {\n  return `\n    <div style=\"font-size:14px; font-weight:900; margin:10px 0 6px 0;\">\n      ${esc(text)}\n    </div>\n  `;\n}\n\nfunction renderBullets(arr) {\n  const xs = normalizeBullets(arr, 5);\n  if (!xs.length) return `<div style=\"color:#999; font-size:13px;\">(No content)</div>`;\n  return `\n    <ul style=\"margin:0 0 0 18px; padding:0;\">\n      ${xs.map(x => `<li style=\"margin:4px 0;\">${esc(x)}</li>`).join(\"\")}\n    </ul>\n  `;\n}\n\nfunction normalizeVocab(vocabArr, max = 2) {\n  if (!Array.isArray(vocabArr)) return [];\n  return vocabArr\n    .map(v => ({\n      word: String(v?.word ?? \"\").trim(),\n      pos: String(v?.pos ?? \"\").trim(),\n      definition_de: String(v?.definition_de ?? \"\").trim(),\n      example_de: String(v?.example_de ?? \"\").trim(),\n      translation_en: String(v?.translation_en ?? \"\").trim(),\n      translation_zh: String(v?.translation_zh ?? \"\").trim(),\n    }))\n    .filter(v => v.word) // require at least word\n    .slice(0, max);\n}\n\n/* -------------------------\n   1) Read model output\n-------------------------- */\nconst raw = $json?.output?.[0]?.content?.[0]?.text || \"\";\nlet data = safeJsonParse(raw);\n\n/* -------------------------\n   2) Hard fallback\n-------------------------- */\nif (!data || typeof data !== \"object\") {\n  data = { title: \"German News Update + Learning\", date: \"\", count: 0, items: [] };\n}\n\nconst digestTitle = esc(String(data.title || \"German News Update + Learning\").trim());\nconst dateStr = String(data.date || \"\").trim();\nconst dateSafe = esc(dateStr || new Date().toISOString().slice(0, 10));\n\nlet items = Array.isArray(data.items) ? data.items : [];\nitems = items.slice(0, 10); // 你 German learning flow 通常 max 10 items\n\n/* -------------------------\n   3) Build HTML (Learning-first)\n-------------------------- */\nlet html = `\n<div style=\"font-family: Arial, Helvetica, sans-serif; line-height:1.6; color:#111; background:#fff;\">\n  <div style=\"max-width:720px; margin:0 auto; padding:18px 16px;\">\n    \n    <!-- Header -->\n    <div style=\"margin-bottom:14px;\">\n      <div style=\"font-size:26px; font-weight:900; letter-spacing:-0.2px;\">\n        🇩🇪 ${digestTitle}\n      </div>\n      <div style=\"color:#666; font-size:14px; margin-top:6px;\">\n        ${badge(\"B1 Learning Mode\", \"#ECFDF5\", \"#065F46\")}\n        Date: <strong>${dateSafe}</strong> &nbsp;•&nbsp; Items: <strong>${items.length}</strong>\n      </div>\n    </div>\n\n    <div style=\"border-top:1px solid #eee; margin:16px 0;\"></div>\n`;\n\n/* -------------------------\n   4) Articles (DE first + vocab 2 per article)\n-------------------------- */\nitems.forEach((it, idx) => {\n  const title = esc(it?.title || `News #${idx + 1}`);\n  const itemDateStr = String(it?.date || dateStr || \"\").trim();\n  const itemDate = esc(itemDateStr || dateSafe);\n\n  const linkRaw = String(it?.link || \"\").trim();\n  const link = esc(linkRaw);\n\n  // summaries\n  let de = normalizeBullets(it?.summary_de, 5);\n  let en = normalizeBullets(it?.summary_en, 5);\n  let zh = normalizeBullets(it?.summary_zh, 5);\n\n  if (!de.length) de = [\"(Keine deutsche Zusammenfassung)\"];\n  if (!en.length) en = [\"(No English summary)\"];\n  if (!zh.length) zh = [\"（沒有中文重點）\"];\n\n  if (looksSame(en, zh) && en.length && zh.length) {\n    zh = [\"（中文翻譯疑似缺失：請檢查 Message a model prompt / 模型輸出）\"];\n  }\n\n  // vocab per article: prefer item.vocab_de_b1; fallback to top-level vocab_de_b1 (optional)\n  const vocabPerItem = normalizeVocab(it?.vocab_de_b1, 2);\n  const vocabFallback = normalizeVocab(data?.vocab_de_b1, 2);\n  const vocabToUse = vocabPerItem.length ? vocabPerItem : vocabFallback;\n\n  html += `\n    <div style=\"padding:14px 0;\">\n      <!-- Title row -->\n      <div style=\"font-size:18px; font-weight:900; margin:0 0 6px 0;\">\n        ${idx + 1}. ${title}\n      </div>\n\n      <div style=\"color:#666; font-size:13px; margin-bottom:10px;\">\n        ${badge(\"DE 먼저\", \"#EFF6FF\", \"#1D4ED8\")}\n        <span style=\"margin-right:10px;\">📅 ${itemDate}</span>\n        ${linkRaw ? `<a href=\"${link}\" style=\"color:#1a73e8; text-decoration:underline; font-weight:800;\">Open link</a>` : `<span style=\"color:#999;\">(No link)</span>`}\n      </div>\n\n      <!-- A) German Summary FIRST -->\n      <div style=\"background:#F8FAFC; border:1px solid #EEF2F7; border-radius:12px; padding:12px; margin:10px 0;\">\n        ${sectionTitle(\"🇩🇪 Zusammenfassung (B1)\")}\n        ${renderBullets(de)}\n      </div>\n\n      <!-- B) Vocab (2 words per article) -->\n      <div style=\"border:1px solid #eee; border-radius:12px; padding:12px; margin:10px 0;\">\n        ${sectionTitle(\"📌 B1 Vokabeln (2 Wörter)\")}\n        ${\n          vocabToUse.length\n            ? vocabToUse.map((v, i2) => `\n              <div style=\"padding:10px; border-radius:10px; background:#fff; border:1px solid #f1f1f1; margin:8px 0;\">\n                <div style=\"font-weight:900; font-size:15px;\">\n                  ${i2 + 1}. ${esc(v.word)} ${v.pos ? `<span style=\"color:#666; font-weight:800; font-size:12px;\">(${esc(v.pos)})</span>` : \"\"}\n                </div>\n                ${v.definition_de ? `<div style=\"margin-top:6px;\"><strong>DE:</strong> ${esc(v.definition_de)}</div>` : \"\"}\n                ${v.example_de ? `<div style=\"margin-top:6px;\"><strong>Beispiel:</strong> ${esc(v.example_de)}</div>` : \"\"}\n                ${v.translation_en ? `<div style=\"margin-top:6px;\"><strong>EN:</strong> ${esc(v.translation_en)}</div>` : \"\"}\n                ${v.translation_zh ? `<div style=\"margin-top:6px;\"><strong>中文:</strong> ${esc(v.translation_zh)}</div>` : \"\"}\n              </div>\n            `).join(\"\")\n            : `<div style=\"color:#999; font-size:13px;\">(No vocab returned for this article)</div>`\n        }\n      </div>\n\n      <!-- C) EN + ZH (supporting) -->\n      <div style=\"display:block; margin:10px 0;\">\n        <div style=\"background:#FFFFFF; border:1px solid #F1F1F1; border-radius:12px; padding:12px; margin-bottom:10px;\">\n          ${sectionTitle(\"🇬🇧 Key points\")}\n          ${renderBullets(en)}\n        </div>\n\n        <div style=\"background:#FFFFFF; border:1px solid #F1F1F1; border-radius:12px; padding:12px;\">\n          ${sectionTitle(\"🇭🇰 中文重點\")}\n          ${renderBullets(zh)}\n        </div>\n      </div>\n    </div>\n\n    <div style=\"border-top:1px solid #f1f1f1; margin:0;\"></div>\n  `;\n});\n\n/* -------------------------\n   5) Footer\n-------------------------- */\nhtml += `\n    <div style=\"color:#999; font-size:12px; margin-top:14px;\">\n      Sent automatically with n8n\n    </div>\n  </div>\n</div>\n`;\n\n/* -------------------------\n   6) Subject\n-------------------------- */\nconst subject = `${String(data.title || \"German News Learning\").trim()} — ${dateStr || new Date().toISOString().slice(0, 10)}`.trim();\n\nreturn [\n  {\n    json: {\n      emailHtml: html,\n      subject,\n      // optional debug:\n      // _rawModelText: raw,\n      // _parsed: data,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1968,
+        -32
+      ],
+      "id": "f0376b96-b82c-4621-a4d2-11e5c45bf624",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "Hey! Time to Learn German!",
+        "message": "={{ $json.emailHtml }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2176,
+        -32
+      ],
+      "id": "559ad0de-5782-4485-a013-c009056a0e35",
+      "name": "Send a message",
+      "webhookId": "d256f2cf-8be4-4af7-83eb-70c910f70e91",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xxxxxxxxxxxxxxxxxxxxx",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Extract & Prepare German News Sources\n**🎯 Goal: Collect relevant German news articles for B1 learning digest.**\n\nSources:\n- RSS Read (Franken) → Filter \"Nürnberg\"\n- RSS Read (Kultur) → Max 5 items\n\nWorkflow Steps:\n\n1️⃣ Schedule Trigger\n   - Runs daily (e.g., 08:00)\n\n2️⃣ RSS Read (Franken)\n   - Local news\n   - Filter keyword: \"Nürnberg\"\n\n3️⃣ RSS Read (Kultur)\n   - Culture & society\n   - Limit to 5 items\n\n4️⃣ Limit Control\n   - Franken: filtered + limited\n   - Kultur: max 5\n",
+        "height": 1072,
+        "width": 960
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        -704
+      ],
+      "id": "f0460a48-701d-490d-8b0a-fe1fac9cb2e8",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Architecture Summary:\n\nPipeline:\nRSS (Franken + Kultur)\n→ Filter (Location / Category)\n→ Limit (Quota Control)\n→ Normalize (Schema Standardization)\n→ Merge (Source Priority)\n→ AI Learning Summarization\n→ JSON Validation\n→ Learning-focused HTML Render\n→ Email Delivery\n\nMode: 🇩🇪 German B1 Learning System\nOutput: Structured JSON + Vocabulary Training",
+        "height": 352,
+        "width": 688,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        -1088
+      ],
+      "id": "65777519-ff7d-4b15-91f8-6cead40fa432",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Extract & Prepare German News Sources\n5️⃣ Edit Fields (Normalize)\n   Standardized schema:\n   {\n     title: \"\",\n     date: \"\",\n     link: \"\",\n     content: \"\",\n     source: \"Franken\" | \"Kultur\"\n   }\n\n6️⃣ Merge (Append)\n   - Combine two sources\n   - Preserve source priority",
+        "height": 1072,
+        "width": 672
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        912,
+        -704
+      ],
+      "id": "d084ca6d-d2f0-4bcf-87f4-c4fba8777e4d",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## AI Learning Summarization & Email Delivery\n🧠 AI Learning Engine\n\n1️⃣ Code (Pre-AI Normalization)\n   - Aggregate into single item\n   - articles[]\n   - count\n\n2️⃣ Message a Model\n   Output schema (STRICT JSON):\n\n   Rules:\n   - B1-level German\n   - 2 vocabulary words per article\n   - Bullet counts must match across languages\n\n3️⃣ Code (JSON Validate & Safe Parse)\n   - Defensive parsing\n   - Ensure bullet alignment\n   - Ensure 2 vocab per article\n   - Prevent empty arrays\n\n4️⃣ HTML Render (Learning Mode Layout)\n   - German summary FIRST\n   - Vocab (2 words) per article\n   - EN + ZH as support\n   - Clean email-safe inline CSS\n\n5️⃣ Send Email (Gmail)\n",
+        "height": 1072,
+        "width": 848,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1600,
+        -704
+      ],
+      "id": "3bdc8242-525d-413e-943a-2b5daf7a31f1",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read(Kultur)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read(Franken)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read(Kultur)": {
+      "main": [
+        [
+          {
+            "node": "Limit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read(Franken)": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "38badfed-81e2-4070-8bc0-76a91fb4e5bf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "615ba2b4545d84b681fb6f6afcb87403b449912d90921debc4625315f23cd0f2"
+  },
+  "id": "reSu56h3it8RHFZe",
+  "tags": []
+}

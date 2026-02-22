@@ -1,0 +1,519 @@
+{
+  "name": "Daily News Summary",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -32,
+        288
+      ],
+      "id": "7c655360-7d5b-4717-8646-28238b60e816",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "content": "## Extract Local, Financial & Tech News\n\n**📰 Extract & Prepare News Sources**\n**Goal: Collect, filter and standardize news data from multiple RSS sources before AI summarization.**\n\nWorkflow Steps: \n\n1️⃣ **Schedule Trigger**: Runs automatically at predefined time intervals.\n\n2️⃣ **Fetch RSS Feeds**:  Tech RSS (e.g. TechCrunch), Financial RSS (e.g. MarketWatch)\n\n3️⃣ **Filter Relevant Articles**:  Tech: Filter by keywords (e.g. \"AI\", \"APP\", \"Fintech\", \"automation\"); Local: Filter by location-related keywords (e.g. \"Nürnberg\")\n\n4️⃣ **Normalize Fields**: Standardize fields: title, link, snippet; Format date to yyyy-MM-dd HH:mm\n\n5️⃣ **Merge Sources**:  Combine all selected articles into a unified structure:\n{\n  \"articles\": [\n    {\n      \"title\": \"...\",\n      \"link\": \"...\",\n      \"snippet\": \"...\"\n    }\n  ]\n}\n",
+        "height": 928,
+        "width": 1632
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -112,
+        -288
+      ],
+      "id": "219fe7b3-e7a6-4bfe-8c10-d278f361e38a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        176
+      ],
+      "id": "5217eca5-99dd-4e9e-b404-f15857853bcc",
+      "name": "Tech RSS Read"
+    },
+    {
+      "parameters": {
+        "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        464
+      ],
+      "id": "ce84eeab-10e1-4bc3-8b9f-7f63a1a2444c",
+      "name": "MarketWatch RSS Read"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "21f242d1-8589-464b-af19-695424d8c7ba",
+              "leftValue": "={{ $json.categories }}",
+              "rightValue": "AI",
+              "operator": {
+                "type": "array",
+                "operation": "contains",
+                "rightType": "any"
+              }
+            },
+            {
+              "id": "d784dfce-692c-4492-ba8b-7ac3c0557160",
+              "leftValue": "={{ $json.categories }}",
+              "rightValue": "warehouse automation",
+              "operator": {
+                "type": "array",
+                "operation": "contains",
+                "rightType": "any"
+              }
+            },
+            {
+              "id": "9093e45d-09fc-42c8-a4e7-919ab480b781",
+              "leftValue": "={{ $json.categories }}",
+              "rightValue": "Fintech",
+              "operator": {
+                "type": "array",
+                "operation": "contains",
+                "rightType": "any"
+              }
+            },
+            {
+              "id": "f3ef74dc-b426-431d-a7cc-b87b46c1de4c",
+              "leftValue": "={{ $json.categories }}",
+              "rightValue": "APP",
+              "operator": {
+                "type": "array",
+                "operation": "contains",
+                "rightType": "any"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        400,
+        176
+      ],
+      "id": "2a10a1ab-018c-46c1-8374-97948b00d819",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.pubDate }}",
+        "format": "custom",
+        "customFormat": "yyyy/MM/dd hh:mm a",
+        "outputFieldName": "Date",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        624,
+        176
+      ],
+      "id": "3fb89b77-3b77-4754-b997-e30c71aae6d0",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "885f4e25-e20f-472e-9d65-8c4dfd36fffc",
+              "name": "title",
+              "value": "={{ $('MarketWatch RSS Read').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "4e51b826-c080-498a-8a24-765cdbff8451",
+              "name": "link",
+              "value": "={{ $('MarketWatch RSS Read').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "15b9d09a-3792-49ec-bfca-d5e6ffe1f02b",
+              "name": "snippet",
+              "value": "={{ $('MarketWatch RSS Read').item.json.contentSnippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        464
+      ],
+      "id": "b88cfd04-8a4a-41bc-b4b0-598ce2e3307f",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dd3eb459-1ab8-4768-a4d9-c785313ba4dd",
+              "name": "title",
+              "value": "={{ $('Tech RSS Read').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "c2a81f05-8c04-417f-b6e5-9c79e13fb2ff",
+              "name": "link",
+              "value": "={{ $('Tech RSS Read').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "86dc4e39-9214-493b-b915-e9f30702e53b",
+              "name": "snippet",
+              "value": "={{ $('Tech RSS Read').item.json.contentSnippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        176
+      ],
+      "id": "bef95769-3910-47f8-bbb7-a9fe9ff0cb92",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1104,
+        336
+      ],
+      "id": "24023651-c6fb-4dc2-a26e-606cf900a047",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "formatDate",
+        "date": "={{ $json.pubDate }}",
+        "format": "custom",
+        "customFormat": "yyyy/MM/dd hh:mm a",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        624,
+        464
+      ],
+      "id": "f49a6089-357e-4bd8-8420-33cedf54195c",
+      "name": "Date & Time1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4.1-nano",
+          "mode": "list",
+          "cachedResultName": "GPT-4.1-NANO"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "=You are a news digest generator.\n\nReturn ONLY valid JSON. No markdown. No code block. No extra text.\n\nSchema (must follow exactly):\n{\n  \"date\": string,\n  \"count\": number,\n  \"items\": [\n    {\n      \"title\": string,\n      \"link\": string,\n      \"summary_en\": string[],\n      \"summary_zh\": string[]\n    }\n  ]\n}\n\nInput:\ndate: {{ $now.toFormat(\"yyyy-LL-dd\") }}\narticles: {{ JSON.stringify($json.articles) }}\n\nRules:\n- items length must equal the number of input articles (max 20; if more, summarise the first 20).\n- summary_en must be 3-5 bullets.\n- summary_zh must have the same number of bullets as summary_en.\n- DO NOT use any other keys (e.g., \"summary\"). Only the keys in schema are allowed.\n"
+            },
+            {
+              "content": "=Return ONLY valid JSON and follow the schema EXACTLY.\nDo not include any extra keys. Do not include markdown.\n\nSchema:\n{\n  \"date\": \"string\",\n  \"count\": 0,\n  \"items\": [\n    {\n      \"title\": \"string\",\n      \"link\": \"string\",\n      \"summary_en\": [\"string\"],\n      \"summary_zh\": [\"string\"]\n    }\n  ]\n}\n\nInput:\ndate: {{ $now.toFormat(\"yyyy-LL-dd\") }}\narticles: {{ JSON.stringify($json.articles) }}\n\nRules:\n- items length must equal the number of input articles (max 20; if more, use only the first 20).\n- For EACH item:\n  - summary_en must be 3-5 concise bullet points (array of strings).\n  - summary_zh must be Traditional Chinese translation of summary_en (array of strings).\n  - summary_zh MUST have the same number of bullets as summary_en.\n- Use the article snippet as the main source. If snippet is empty, infer from title, but still output 3 bullet points.\n- Output must be valid JSON only.\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        1632,
+        416
+      ],
+      "id": "b8371b75-e295-41c1-8c7b-407f74c2f1b6",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "xxxxxxxxxxxxxxxxx",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function esc(s = \"\") {\n  return String(s)\n    .replace(/&/g, \"&amp;\")\n    .replace(/</g, \"&lt;\")\n    .replace(/>/g, \"&gt;\")\n    .replace(/\"/g, \"&quot;\")\n    .replace(/'/g, \"&#039;\");\n}\n\nfunction safeJsonParse(raw = \"\") {\n  try {\n    return JSON.parse(raw);\n  } catch (e) {\n    // Try to extract JSON object from extra text (defensive)\n    const m = String(raw).match(/\\{[\\s\\S]*\\}/);\n    if (m) {\n      try { return JSON.parse(m[0]); } catch (_) {}\n    }\n    return null;\n  }\n}\n\nfunction normalizeBullets(arr) {\n  if (!Array.isArray(arr)) return [];\n  return arr\n    .map(x => String(x ?? \"\").trim())\n    .filter(Boolean)\n    .slice(0, 5);\n}\n\nfunction looksSame(en, zh) {\n  if (!en.length || !zh.length) return false;\n  if (en.length !== zh.length) return false;\n  return en.every((v, i) => String(v).trim() === String(zh[i]).trim());\n}\n\n// 1) Read model output\nconst raw = $json?.output?.[0]?.content?.[0]?.text || \"\";\n\n// 2) Parse JSON\nlet data = safeJsonParse(raw);\n\n// 3) Hard fallback\nif (!data || typeof data !== \"object\") {\n  data = { date: \"\", count: 0, items: [] };\n}\n\nconst dateStr = String(data.date || \"\").trim();\nconst dateSafe = esc(dateStr || new Date().toISOString().slice(0, 10));\n\nlet items = Array.isArray(data.items) ? data.items : [];\nitems = items.slice(0, 20);\n\n// 4) Build HTML (email-friendly, simple, readable)\nlet html = `\n<div style=\"font-family: Arial, Helvetica, sans-serif; line-height: 1.55; color:#111;\">\n  <div style=\"font-size:28px; font-weight:800; margin:0 0 8px 0;\">📰 Daily News Digest</div>\n  <div style=\"color:#666; font-size:14px; margin-bottom:18px;\">\n    Date: <strong>${dateSafe}</strong> &nbsp;•&nbsp; Items: <strong>${items.length}</strong>\n  </div>\n\n  <div style=\"border-top:1px solid #eee; margin:16px 0;\"></div>\n`;\n\nitems.forEach((it, idx) => {\n  const title = esc(it?.title || `News #${idx + 1}`);\n  const linkRaw = String(it?.link || \"\").trim();\n  const link = esc(linkRaw);\n\n  let en = normalizeBullets(it?.summary_en);\n  let zh = normalizeBullets(it?.summary_zh);\n\n  // If zh missing -> show placeholder instead of copying English\n  if (!zh.length && en.length) {\n    zh = en.map(() => \"（未提供中文翻譯）\");\n  }\n\n  // If zh suspiciously identical to en -> warn\n  if (looksSame(en, zh) && en.length) {\n    zh = en.map(() => \"（中文翻譯疑似缺失：請檢查 Message a model prompt）\");\n  }\n\n  html += `\n  <div style=\"padding:14px 0;\">\n    <div style=\"font-size:18px; font-weight:800; margin:0 0 8px 0;\">\n      ${idx + 1}. ${title}\n    </div>\n\n    ${linkRaw ? `\n      <div style=\"margin:0 0 12px 0;\">\n        <a href=\"${link}\" style=\"color:#1a73e8; text-decoration:underline; font-weight:600;\">Open link</a>\n      </div>\n    ` : \"\"}\n\n    ${en.length ? `\n      <div style=\"font-weight:800; margin:10px 0 6px 0;\">🇬🇧 Key points</div>\n      <ul style=\"margin:0 0 10px 20px; padding:0;\">\n        ${en.map(x => `<li style=\"margin:4px 0;\">${esc(x)}</li>`).join(\"\")}\n      </ul>\n    ` : `<div style=\"color:#999; font-size:13px;\">(No English summary)</div>`}\n\n    ${zh.length ? `\n      <div style=\"font-weight:800; margin:10px 0 6px 0;\">🇭🇰 中文重點</div>\n      <ul style=\"margin:0 0 0 20px; padding:0;\">\n        ${zh.map(x => `<li style=\"margin:4px 0;\">${esc(x)}</li>`).join(\"\")}\n      </ul>\n    ` : `<div style=\"color:#999; font-size:13px;\">(No Chinese summary)</div>`}\n  </div>\n\n  <div style=\"border-top:1px solid #f1f1f1; margin:0;\"></div>\n  `;\n});\n\nhtml += `\n  <div style=\"color:#999; font-size:12px; margin-top:14px;\">\n    Sent automatically with n8n\n  </div>\n</div>\n`;\n\n// Subject can be today’s date\nconst subject = `News Digest ${dateStr || new Date().toISOString().slice(0,10)}`.trim();\n\nreturn [\n  {\n    json: {\n      emailHtml: html,\n      subject,\n      // debug fields (optional)\n      // _rawModelText: raw,\n      // _parsed: data\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2048,
+        416
+      ],
+      "id": "bdb5a8d9-ef68-47f0-b8c6-e702ed7999ec",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "Hey! News Update! :D",
+        "message": "={{ $json.emailHtml }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2368,
+        416
+      ],
+      "id": "e553137f-5afe-4545-b4cb-842ecf2c5e17",
+      "name": "Send a message",
+      "webhookId": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxx",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// /nodes/Code (after Merge)\nconst articles = items\n  .map((i) => ({\n    title: i.json.Title ?? i.json.title,\n    link: i.json.Link ?? i.json.link,\n    snippet: i.json.Snippet ?? i.json.snippet ?? '',\n  }))\n  .filter((a) => a.title && a.link);\n\nreturn [\n  {\n    json: {\n      articles,\n      count: articles.length,\n    },\n  },\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        336
+      ],
+      "id": "323db664-69fa-402f-8e55-e434ff5eb4e7",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "content": "## Summarise the News and Send to Email\n\n**✨ AI Summarization & Email Delivery**\n**Goal: Generate a structured daily digest using AI and send a clean HTML email automatically.**\n\n1️⃣ **Message a Model (AI Summarization)**: \n- Input: Aggregated articles\n- Output: Strict JSON format: \n{\n  \"date\": \"yyyy-MM-dd\",\n  \"count\": number,\n  \"items\": [\n    {\n      \"title\": \"...\",\n      \"link\": \"...\",\n      \"summary_en\": [\"...\"],\n      \"summary_zh\": [\"...\"]\n    }\n  ]\n}\n\n2️⃣ **Code (Parse & Validate JSON)**:  Safely parse model output; Enforce schema\nEnsure:\n- 3–5 bullets per article\n- Traditional Chinese translation matches bullet count\n- Max 20 items\n\n3️⃣ **Generate Clean HTML Email**: Styled layout; Structured sections; English + Chinese bullet points; Automatic item count\n\n4️⃣ **Send Email (Gmail Node)**: Subject: {{ $json.subject }}; HTML Body: {{ $json.emailHtml }}; Scheduled delivery (e.g., 08:00 daily)",
+        "height": 928,
+        "width": 1040,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1552,
+        -288
+      ],
+      "id": "09cc7398-cb12-4416-914b-95e591a91428",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Architecture Summary: \n##  Pipeline: RSS → Filter → Normalize → Merge → AI Summarize → Validate → HTML Render → Email Delivery",
+        "width": 1648,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        352,
+        -480
+      ],
+      "id": "b28d77ac-d7c6-4a3f-bc3b-ca95b68d7721",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Tech RSS Read",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "MarketWatch RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tech RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MarketWatch RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Date & Time1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Date & Time1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "152a69b2-6629-4707-bd6f-78891c5a5b00",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "615ba2b4545d84b681fb6f6afcb87403b449912d90921debc4625315f23cd0f2"
+  },
+  "id": "QQQBnaHOpLRU5YEP",
+  "tags": []
+}
