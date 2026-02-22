@@ -5,6 +5,17 @@ An AI-powered news automation engine built with n8n.
 This workflow aggregates multiple RSS feeds, filters relevant articles, normalizes data fields, performs structured LLM-based summarization with strict JSON schema validation, renders a clean HTML email, and delivers a daily news digest automatically.
 
 ---
+## Workflow Overview
+
+<p align="center">
+  <img src="workflow-overview.png" width="900">
+</p>
+
+## Email Preview
+
+<p align="center">
+  <img src="email-preview.png" width="900">
+</p>
 
 ## 🚀 Architecture Overview
 
@@ -42,17 +53,5 @@ The LLM must return:
   ]
 }
 
-
-## Workflow Overview
-
-<p align="center">
-  <img src="workflow-overview.png" width="900">
-</p>
-
-## Email Preview
-
-<p align="center">
-  <img src="email-preview.png" width="900">
-</p>
 
 
