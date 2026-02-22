@@ -41,3 +41,18 @@ The LLM must return:
     }
   ]
 }
+
+
+## Workflow Overview
+
+<p align="center">
+  <img src="workflow-overview.png" width="900">
+</p>
+
+## Email Preview
+
+<p align="center">
+  <img src="email-preview.png" width="900">
+</p>
+
+
